@@ -1,0 +1,22 @@
+{
+  "BinanceApi": {
+    "BaseUrl": "xx",
+    "ApiKey": "xx",
+    "SecretKey": "xx",
+    "FormGoogle": "XX"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "PostgresDb": "Server=database-1.cjyouc8iegdj.ca-central-1.rds.amazonaws.com ;Port=5432;Database=caprimdb;User Id=postgres;Password=Caprimtech2025.;"
+  },
+  "Levels": {
+    "Level1": "45000000",
+    "Level2": "450000000"
+  }
+}
