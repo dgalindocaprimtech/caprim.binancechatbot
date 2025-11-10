@@ -536,26 +536,29 @@ public class BinanceC2CChatClient
                         if (lvlrequired <= _kycDetails.KycLevel)
                         {
                             chatReplyContent = $"✅Hola, cómo estás? Confirmame si los datos del perfil son correctos por favor.";
+                            Thread.Sleep(500);
+
+                            replyPayload = new ChatMessagePayload
+                            {
+                                OrderNo = string.IsNullOrEmpty(message?.OrderNo) ? message?.TopicId : message.OrderNo, // El ID de la conversación/orden del chat
+                                Content = chatReplyContent, // Mensaje con detalles de la orden
+                                Uuid = Guid.NewGuid().ToString() // Nuevo UUID para este mensaje
+                            };
+
+                            replyJson = JsonSerializer.Serialize(replyPayload);
+                            replyBytes = Encoding.UTF8.GetBytes(replyJson);
+                            segment = new ArraySegment<byte>(replyBytes);
+                            await ws.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
                         }
                         else
                         {
-                            chatReplyContent = $"Hola, ¿cómo estás? Con esta operación pasamos los {(lvlrequired == 2 ? "10.000" : "100.000")} usd en transacciones durante los últimos 30 días, por esta razón requerimos verificar el origen de fondos, por favor enviarnos declaración de renta y 3 últimos extractos Bancarios.";
+                            _result.Item1 = false;
+                            
                         }
 
-                        Thread.Sleep(500);
-
-                        replyPayload = new ChatMessagePayload
-                        {
-                            OrderNo = string.IsNullOrEmpty(message?.OrderNo) ? message?.TopicId : message.OrderNo, // El ID de la conversación/orden del chat
-                            Content = chatReplyContent, // Mensaje con detalles de la orden
-                            Uuid = Guid.NewGuid().ToString() // Nuevo UUID para este mensaje
-                        };
-
-                        replyJson = JsonSerializer.Serialize(replyPayload);
-                        replyBytes = Encoding.UTF8.GetBytes(replyJson);
-                        segment = new ArraySegment<byte>(replyBytes);
-                        await ws.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
+                        
                     }
+
                     if (!_result.Item1)
                     {
                         chatReplyContent = $"{FormGoogle.Replace("[ordenID]", string.IsNullOrEmpty(message?.OrderNo) ? message?.TopicId : message.OrderNo).Replace("[Monto]", GetIntegerPart(orderDetailResponse.Data.TotalPrice))}";
